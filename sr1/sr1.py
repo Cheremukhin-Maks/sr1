@@ -3,9 +3,30 @@ import math
 
 def calculator():
 
-    """Інтерактивний калькулятор з підтримкою +, -, *, /, //, %, **, !"""
+    """Інтерактивний калькулятор з підтримкою +, -, *, /, //, %, **, !
+
+    Містить історію обчислень, словник операцій та перевірки на помилки введення.
+    """
 
     print("=== Калькулятор ===")
+
+
+    operations = {
+        "+": ":  a + b",
+        "-": ":  a - b",
+        "*": ":  a * b",
+        "/": ":  a / b",
+        "//": ":  a // b",
+        "%":  ":  a % b",
+        "**": ":   a**b",
+        "!": ":  a !"
+    }
+
+
+    print("Доступні операції та прикоад введення")
+    for key, values in operations.items():
+        print( key, values)
+    print()
 
     print("Введіть вираз у форматі: число оператор число (через пробіл) або для знаходження факторіалу: число оператор (через пробіл)")
 
@@ -30,10 +51,12 @@ def calculator():
                 continue
 
         parts = user_input.split()
+        
         if len(parts) < 2 or len(parts) > 3:
             print("Помилка: Некоректний формат! Введіть: число оператор число або для знаходження факторіалу: число оператор")
             continue
 
+        
         try:
             if len(parts) == 3:
                 str_num1, operator, str_num2 = parts
@@ -42,44 +65,50 @@ def calculator():
             elif len(parts) == 2:
                 str_num1, operator = parts
                 num1 = float(str_num1)
+                if not num1.is_integer():
+                    raise ValueError("Число повинно бути цілим")
                 if num1 < 0:
                     raise ValueError("Число не може бути від'ємним")
                 
         
             result = None
-
-            if operator == "+":
-                result = num1 + num2
-            elif operator == "-":
-                result = num1 - num2
-            elif operator == "*":
-                result = num1 * num2
-            elif operator == "/":
-                if num2 == 0:
-                    print("Помилка: Ділення на нуль неможливе!")
+            try: 
+                if operator == "+":
+                    result = num1 + num2
+                elif operator == "-":
+                    result = num1 - num2
+                elif operator == "*":
+                    result = num1 * num2
+                elif operator == "/":
+                    if num2 == 0:
+                        print("Помилка: Ділення на нуль неможливе!")
+                        continue
+                    result = num1 / num2
+                elif operator == "//":
+                    if num2 == 0:
+                        print("Помилка: Цілочисельне ділення на нуль неможливе!")
+                        continue
+                    result = num1 // num2
+                elif operator == "%":
+                    if num2 == 0:
+                        print("Помилка: Ділення на нуль (остача) неможливе!")
+                        continue
+                    result = num1 % num2
+                elif operator == "**":
+                    result = num1**num2
+                elif operator == "!":
+                    result = 1
+                    if num1 > 0:
+                        for num in range(1, int(num1 + 1)):
+                            result *= num
+                else:
+                    print(f"Помилка: Непідтримуваний оператор '{operator}'!")
+                    print("Допустимі оператори: +, -, *, /, //, %, **")
                     continue
-                result = num1 / num2
-            elif operator == "//":
-                if num2 == 0:
-                    print("Помилка: Цілочисельне ділення на нуль неможливе!")
-                    continue
-                result = num1 // num2
-            elif operator == "%":
-                if num2 == 0:
-                    print("Помилка: Ділення на нуль (остача) неможливе!")
-                    continue
-                result = num1 % num2
-            elif operator == "**":
-                result = num1**num2
-            elif operator == "!":
-                result = 1
-                if num1 > 0:
-                    for num in range(1, int(num1 + 1)):
-                        result *= num
-            else:
-                print(f"Помилка: Непідтримуваний оператор '{operator}'!")
-                print("Допустимі оператори: +, -, *, /, //, %, **")
+            except UnboundLocalError:
+                print("Некоректне введення")
                 continue
+                
 
         
             if len(parts) == 3:
@@ -96,6 +125,9 @@ def calculator():
 
 
 def triangle():
+
+    """Функція для роботи з трикутником (обчислення периметра та площі за трьома сторонами)."""
+
     while(True):
         print("Дії з трикутником")
         print("Введіть значення для сторін трикутника(три числа через пробіл), для вихоу введіть: quit")
@@ -138,41 +170,64 @@ def triangle():
             print("Такого трикутника неіснує!")
 
 
+class NumberRangeIterator:
+    """Власний клас ітератора для генерації послідовності чисел від start до end."""
+
+    def __init__(self, start, end):
+        self.current = start
+        self.end = end
+        self.step = 1 if start <= end else -1
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if (self.step > 0 and self.current > self.end) or (
+            self.step < 0 and self.current < self.end
+        ):
+            raise StopIteration
+        val = self.current
+        self.current += self.step
+        return val
+
+
 def my_generator(start, end):
+    """Генератор для послідовності чисел (через yield)."""
     step = 1 if start <= end else -1
     curr = start
-    while (curr <= end if step > 0 else curr >= end):
+    while curr <= end if step > 0 else curr >= end:
         yield curr
         curr += step
 
+
 def iterator():
-    print("Демонстрація Ітератора та Генератора")
-    while (True):
-        print("Введіть початкове та кінцеве число (через пробіл) або 'quit':")
+    """Демонстрація роботи власного ітератора та генератора."""
+    print("\n--- Демонстрація Ітератора та Генератора ---")
+    while True:
+        print("Введіть початкове та кінцеве ціле число (через пробіл) або 'quit':")
         inp = input()
         if inp.lower() == "quit":
             break
-        
+
         parts = inp.split()
         if len(parts) != 2:
-            print("Необхідно ввести мінімум 2 числа!")
+            print("Необхідно ввести рівно 2 числа!")
             continue
-            
+
         try:
             start, end = int(parts[0]), int(parts[1])
-            
-            print("Обхід через генератор (yield):")
+
+            print("\n1. Обхід через функцію-генератор (yield):")
             for num in my_generator(start, end):
-                print(num)
+                print(num, end=" ")
             print()
 
-            print("Ручний обхід через ітератор (iter / next):")
-            sample_list = [start, (start + end) // 2, end]
-            it = iter(sample_list)
-            print("Перший елемент:", next(it))
-            print("Другий елемент:", next(it))
-            print("Третій елемент:", next(it))
-            
+            print("\n2. Обхід через власний клас ітератора (NumberRangeIterator):")
+            custom_iter = NumberRangeIterator(start, end)
+            for num in custom_iter:
+                print(num, end=" ")
+            print("\n")
+
         except ValueError:
             print("Введіть коректні цілі числа!")
 
