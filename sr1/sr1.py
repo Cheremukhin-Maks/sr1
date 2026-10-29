@@ -76,8 +76,6 @@ def calculator():
                 if num1 > 0:
                     for num in range(1, int(num1 + 1)):
                         result *= num
-                
-
             else:
                 print(f"Помилка: Непідтримуваний оператор '{operator}'!")
                 print("Допустимі оператори: +, -, *, /, //, %, **")
